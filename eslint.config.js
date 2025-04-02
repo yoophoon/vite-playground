@@ -60,6 +60,10 @@ export default tseslint.config(
       'import-x': pluginImportX,
     },
     rules: {
+      'no-trailing-spaces': [
+        'error',
+        { skipBlankLines: false, ignoreComments: true },
+      ],
       'n/no-exports-assign': 'error',
       'n/no-unpublished-bin': 'error',
       'n/no-unsupported-features/es-builtins': 'error',
