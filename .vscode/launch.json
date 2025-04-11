@@ -13,6 +13,16 @@
       "resolveSourceMapLocations": ["${workspaceFolder}/**"],
       "type": "node",
       "cwd": "${workspaceFolder}/playground/hmr/"
+    },
+    {
+      "name": "devENV",
+      "request": "launch",
+      "runtimeArgs": ["dev"],
+      "runtimeExecutable": "pnpm",
+      "skipFiles": ["<node_internals>/**"],
+      "resolveSourceMapLocations": ["${workspaceFolder}/**"],
+      "type": "node",
+      "cwd": "${workspaceFolder}/playground/env/"
     }
   ]
 }

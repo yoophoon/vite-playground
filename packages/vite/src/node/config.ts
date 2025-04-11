@@ -589,6 +589,9 @@ export interface ResolvedConfig
       bundleChain: string[]
       isProduction: boolean
       envDir: string | false
+      /**与config.define区分，config.env一般是从`process.env`及`.env*`文件中获取的
+       * 查看 **MARK** [loadEnv](./env.ts)
+       */
       env: Record<string, any>
       resolve: Required<ResolveOptions> & {
         alias: Alias[]
@@ -1033,7 +1036,7 @@ function resolveDepOptimizationOptions(
     optimizeDeps ?? {},
   )
 }
-
+//MARK resolveConfig
 export async function resolveConfig(
   inlineConfig: InlineConfig,
   command: 'build' | 'serve',
@@ -1701,7 +1704,7 @@ export function resolveBaseUrl(
   // parse base when command is serve or base is not External URL
   if (!isBuild || !isExternal) {
     base = new URL(base, 'http://vite.dev').pathname
-    // ensure leading slash
+    // ensure leading slash URL构造函数好像会自己补全开头的`/`
     if (base[0] !== '/') {
       base = '/' + base
     }
@@ -1737,7 +1740,7 @@ export function sortUserPlugins(
 
   return [prePlugins, normalPlugins, postPlugins]
 }
-
+//MARK loadConfigFromFile
 export async function loadConfigFromFile(
   configEnv: ConfigEnv,
   configFile?: string,

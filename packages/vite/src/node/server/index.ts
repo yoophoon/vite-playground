@@ -423,7 +423,13 @@ export interface ResolvedServerUrls {
   local: string[]
   network: string[]
 }
-
+//#region createServer
+//MARK createSever
+/**
+ *
+ * @param inlineConfig
+ * @returns
+ */
 export function createServer(
   inlineConfig: InlineConfig = {},
 ): Promise<ViteDevServer> {
@@ -986,7 +992,8 @@ export async function _createServer(
 
   return server
 }
-
+//#endregion
+//#region startServer
 async function startServer(
   server: ViteDevServer,
   inlinePort?: number,
@@ -1016,7 +1023,7 @@ async function startServer(
   })
   server._currentServerPort = serverPort
 }
-
+//#endregion
 export function createServerCloseFn(
   server: HttpServer | null,
 ): () => Promise<void> {

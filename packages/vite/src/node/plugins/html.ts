@@ -1206,16 +1206,22 @@ export function injectCspNonceMetaTagHook(
     ]
   }
 }
-
+//#region htmlEnvHook
+//MARK htmlEnvHook
 /**
  * Support `%ENV_NAME%` syntax in html files
+ * 支持html文件中采用`%ENV_NAME%`占位符
+ * @param config 当前vite运行的配置选项
+ * @returns 一个函数 函数会将尝试将输入的内容中的所有占位符用env中对应的键值进行替换，如果没有对应的键名则抛出警告
  */
 export function htmlEnvHook(config: ResolvedConfig): IndexHtmlTransformHook {
+  // .html文件中的env占位符表达式
   const pattern = /%(\S+?)%/g
   const envPrefix = resolveEnvPrefix({ envPrefix: config.envPrefix })
   const env: Record<string, any> = { ...config.env }
 
   // account for user env defines
+  // 将config.define的键值对也添加到env变量中进行统一处理
   for (const key in config.define) {
     if (key.startsWith(`import.meta.env.`)) {
       const val = config.define[key]
@@ -1255,7 +1261,7 @@ export function htmlEnvHook(config: ResolvedConfig): IndexHtmlTransformHook {
     })
   }
 }
-
+//#endregion
 export function injectNonceAttributeTagHook(
   config: ResolvedConfig,
 ): IndexHtmlTransformHook {

@@ -15,6 +15,7 @@ import type { InlineConfig } from './config'
 const cli = cac('vite')
 
 // global options
+/** 全局命令行选项 由CAC命令行工具生成 */
 interface GlobalCLIOptions {
   '--'?: string[]
   c?: boolean | string
@@ -37,10 +38,14 @@ interface GlobalCLIOptions {
 interface BuilderCLIOptions {
   app?: boolean
 }
-
+/** 如果命令行指定了`--profile`参数，则会创建一个new node:inspector.session() @vite.js */
 let profileSession = global.__vite_profile_session
 let profileCount = 0
-
+/**
+ * 停止分析工具并将记录内容写入磁盘
+ * @param log 输出日志的回调函数
+ * @returns
+ */
 export const stopProfiler = (
   log: (message: string) => void,
 ): void | Promise<void> => {
@@ -59,14 +64,14 @@ export const stopProfiler = (
           ),
         )
         profileSession = undefined
-        res()
+        res() //成功
       } else {
-        rej(err)
+        rej(err) //失败
       }
     })
   })
 }
-
+/** 过滤选项的重复属性(某个属性为数组则直接取该数组的最后一个元素作为该属性值，用于处理CAC的单选项多次指定) */
 const filterDuplicateOptions = <T extends object>(options: T) => {
   for (const [key, value] of Object.entries(options)) {
     if (Array.isArray(value)) {
@@ -76,6 +81,10 @@ const filterDuplicateOptions = <T extends object>(options: T) => {
 }
 /**
  * removing global flags before passing as command specific sub-configs
+ * 在将选项作为特定子配置进行传递之前移除全局选项，且下列属性会被重新赋值
+ * - options?.source=`boolean`|`"inline"`|`"hidden"`
+ * - options?.watch=`{}`
+ * @returns 移除全局选项且将source、watch属性重新赋值的新对象
  */
 function cleanGlobalCLIOptions<Options extends GlobalCLIOptions>(
   options: Options,
@@ -117,6 +126,8 @@ function cleanGlobalCLIOptions<Options extends GlobalCLIOptions>(
 
 /**
  * removing builder flags before passing as command specific sub-configs
+ * 在将选项作为特定子配置进行传递之前移除构建选项 `delete options.app`
+ * @returns 删除app属性的新对象
  */
 function cleanBuilderCLIOptions<Options extends BuilderCLIOptions>(
   options: Options,
@@ -128,6 +139,7 @@ function cleanBuilderCLIOptions<Options extends BuilderCLIOptions>(
 
 /**
  * host may be a number (like 0), should convert to string
+ * 将数值类型的host转为字符串
  */
 const convertHost = (v: any) => {
   if (typeof v === 'number') {
@@ -145,7 +157,7 @@ const convertBase = (v: any) => {
   }
   return v
 }
-
+//#region base
 cli
   .option('-c, --config <file>', `[string] use specified config file`)
   .option('--base <path>', `[string] public base path (default: /)`, {
@@ -160,8 +172,8 @@ cli
   .option('-d, --debug [feat]', `[string | boolean] show debug logs`)
   .option('-f, --filter <filter>', `[string] filter debug logs`)
   .option('-m, --mode <mode>', `[string] set env mode`)
-
-// dev
+//#endregion
+//#region dev
 cli
   .command('[root]', 'start dev server') // default command
   .alias('serve') // the command is called 'serve' in Vite's API
@@ -262,8 +274,8 @@ cli
       process.exit(1)
     }
   })
-
-// build
+//#endregion
+//#region build
 cli
   .command('build [root]', 'build for production')
   .option('--target <target>', `[string] transpile target (default: 'modules')`)
@@ -334,8 +346,8 @@ cli
       }
     },
   )
-
-// optimize
+//#endregion
+//#region optimize
 cli
   .command(
     'optimize [root]',
@@ -371,8 +383,8 @@ cli
       }
     },
   )
-
-// preview
+//#endregion
+//#region preview
 cli
   .command('preview [root]', 'locally preview production build')
   .option('--host [host]', `[string] specify hostname`, { type: [convertHost] })
@@ -424,7 +436,7 @@ cli
       }
     },
   )
-
+//#endregion
 cli.help()
 cli.version(VERSION)
 

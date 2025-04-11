@@ -124,6 +124,7 @@ async function startBrowserProcess(
       : {}
 
     new Promise((_, reject) => {
+      //MARK 打开浏览器
       open(url, options)
         .then((subprocess) => {
           subprocess.on('error', reject)

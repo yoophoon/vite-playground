@@ -225,6 +225,12 @@ export function importAnalysisPlugin(config: ResolvedConfig): Plugin {
 
   let _env: string | undefined
   let _ssrEnv: string | undefined
+  //MARK getEnv
+  /**
+   * 生成一段字符串，该字符串将会注入文件的头部
+   * @param ssr 是否为服务器侧渲染
+   * @returns 关于import.meta.env={...}的字符串字面量
+   */
   function getEnv(ssr: boolean) {
     if (!_ssrEnv || !_env) {
       const importMetaEnvKeys: Record<string, any> = {}
@@ -717,7 +723,7 @@ export function importAnalysisPlugin(config: ResolvedConfig): Plugin {
         importer.includes(WORKER_FILE_ID) && importer.includes('type=classic')
 
       if (hasEnv && !isClassicWorker) {
-        // inject import.meta.env
+        //MARK inject import.meta.env
         str().prepend(getEnv(ssr))
       }
 
@@ -733,7 +739,7 @@ export function importAnalysisPlugin(config: ResolvedConfig): Plugin {
                   : `[detected api usage]`
           } ${prettifyUrl(importer, root)}`,
         )
-        // inject hot context
+        //MARK inject hot context
         str().prepend(
           `import { createHotContext as __vite__createHotContext } from "${clientPublicPath}";` +
             `import.meta.hot = __vite__createHotContext(${JSON.stringify(

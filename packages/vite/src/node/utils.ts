@@ -195,12 +195,19 @@ interface DebuggerOptions {
 }
 
 export type ViteDebugScope = `vite:${string}`
-
+/**
+ * 创建一个有特定命名空间的debugger调试输出器。只有当环境变量中定义了该命名空间该调试器才会生效
+ * eg：DEBUG=* DEBUG=vite:esbuild
+ * @see debug [github](https://github.com/debug-js/debug)
+ * @param namespace 命名空间
+ * @param options 选项
+ * @returns
+ */
 export function createDebugger(
   namespace: ViteDebugScope,
   options: DebuggerOptions = {},
 ): debug.Debugger['log'] | undefined {
-  const log = debug(namespace)
+  const log = debug(namespace) //Debugger
   const { onlyWhenFocused, depth } = options
 
   // @ts-expect-error - The log function is bound to inspectOpts, but the type is not reflected
@@ -303,8 +310,9 @@ export function isSameFileUri(file1: string, file2: string): boolean {
     (isCaseInsensitiveFS && file1.toLowerCase() === file2.toLowerCase())
   )
 }
-
+/** 外部url的语法 */
 export const externalRE = /^([a-z]+:)?\/\//
+/** 检测输入的字符串是不是外部url 字符串满足`/^([a-z]+:)?\/\//`就认为是外部url */
 export const isExternalUrl = (url: string): boolean => externalRE.test(url)
 
 export const dataUrlRE = /^\s*data:/i

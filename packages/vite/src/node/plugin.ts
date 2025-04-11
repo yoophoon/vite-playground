@@ -95,6 +95,12 @@ declare module 'rollup' {
  * management for for environment specific plugins.
  * Environment Plugins are closer to regular rollup plugins. They can't define
  * app level hooks (like config, configResolved, configureServer, etc).
+ *
+ * vite中有App插件和environment插件两种类型。environment插件被一个构造函数定义，这个构造函数
+ * 会在每个环境中都被调用一次以便用户为每个环境创建完全不同的插件(应该是一个插件实例为不同的环境实
+ * 现了不同的功能)。构造函数会在服务器和构建器被创建之后获取被解析的环境，这样简化了特定环境的插件
+ * 访问和缓存配置的管理。
+ * 环境插件更像rollup的常规插件。它们不能定义app级别的钩子，比如`config`、`configResolved`...
  */
 export interface Plugin<A = any> extends RollupPlugin<A> {
   /**

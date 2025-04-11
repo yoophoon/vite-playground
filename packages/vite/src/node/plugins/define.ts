@@ -11,7 +11,7 @@ const nonJsRe = /\.json(?:$|\?)/
 const isNonJsRequest = (request: string): boolean => nonJsRe.test(request)
 const importMetaEnvMarker = '__vite_import_meta_env__'
 const importMetaEnvKeyReCache = new Map<string, RegExp>()
-
+//MARK definePlugin
 export function definePlugin(config: ResolvedConfig): Plugin {
   const isBuild = config.command === 'build'
   const isBuildLib = isBuild && config.build.lib
@@ -183,7 +183,14 @@ export function definePlugin(config: ResolvedConfig): Plugin {
     },
   }
 }
-
+/**
+ *
+ * @param environment
+ * @param code
+ * @param id
+ * @param define
+ * @returns
+ */
 export async function replaceDefine(
   environment: Environment,
   code: string,
@@ -234,6 +241,10 @@ export async function replaceDefine(
  * Like `JSON.stringify` but keeps raw string values as a literal
  * in the generated code. For example: `"window"` would refer to
  * the global `window` object directly.
+ * 和`JSON.stringify`类似但会将字符串的原始值作为字面量在被生成的内容中保留
+ * 例如：`"window"`将会直接对应全局`window`对象
+ * @param define 被序列化的键值对对象
+ * @returns 传入的对象的字符串形式
  */
 export function serializeDefine(define: Record<string, any>): string {
   let res = `{`
@@ -248,13 +259,23 @@ export function serializeDefine(define: Record<string, any>): string {
   }
   return res + `}`
 }
-
+/**
+ * 返回该值的字符串形式
+ * undefined => "undefined" omit<typeof value,undefined> => JSON.stringify(value)
+ * @param value 被处理的值
+ * @returns 该值的字符串形式
+ */
 function handleDefineValue(value: any): string {
   if (typeof value === 'undefined') return 'undefined'
   if (typeof value === 'string') return value
   return JSON.stringify(value)
 }
-
+/**
+ * 函数会根据importMetaEnvKeyReCache用marker作为键获取其对应的正则表达式
+ * 如果缓存中没有marker对应的正则表达式函数将会根据marker新建一个正则表达式将其缓存后返回
+ * @param marker 用于获取正则的标记
+ * @returns 返回标记对应的正则表达式
+ */
 function getImportMetaEnvKeyRe(marker: string): RegExp {
   let re = importMetaEnvKeyReCache.get(marker)
   if (!re) {
